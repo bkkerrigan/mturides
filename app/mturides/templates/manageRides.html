@@ -1,0 +1,27 @@
+{%extends "base.html"%}
+
+{% block page_content %}
+<div class="container">
+	<h1>Rides Joined</h1>
+</div>
+
+<div class="container">
+	<h1>Hosted Rides</h1>
+	{% for r in user.getHostedRides() %}
+		<h4> {{r.destination}}</h4>
+        <div class="container">
+        	{% for a in r.getApplications() %}
+			  		<a href="/application/{{a.id}}" class="btn btn-default">{{a.getApplicant().name}}</a>
+        	{% endfor %}
+		</div>
+    {% endfor %}
+</div>
+
+<div class="container">
+	<h1>Pending Joins</h1>
+</div>
+
+<div class="container">
+	<h1>Requested Rides</h1>
+</div>
+{% endblock %}

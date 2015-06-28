@@ -1,0 +1,57 @@
+<script>
+function submitMessage(){
+	 $.post('/postMessage/{{application.id}}', $('#mycontactform').serialize())//.done(
+ }
+function fetchChatLog(){
+	$.post('/refreshApplicaton/{{application.id}}').done(function(updateChat){
+		var messages = updateChat['result'];
+		var chatbox = document.getElementById("chatbox");
+		while(chatbox.firstChild){
+			chatbox.removeChild(chatbox.firstChild);
+		}
+		for(var m in messages){
+			var nextMessage = document.createElement("li");
+			text = document.createTextNode(messages[m]);
+			nextMessage.innerText=text.textContent;
+			chatbox.appendChild(nextMessage);
+			console.log(messages[m])
+		}
+	});
+}
+</script>
+
+{%extends "base.html"%}
+{% block page_content %}
+	<h1>Application for {{application.ride.destination}}.</h1>
+	<li>Host: {{host.name}}</li>
+	<li>Applicant: {{applicant.name}}</li>
+	
+
+
+<div class="container-fluid">
+	<div class="panel panel-default">
+	  <div class="panel-body">
+		<div class="form-group">
+			<div class="panel panel-default">
+			  	<div class="panel-body">
+			  		<ul style="list-style-type:none" span id="chatbox">
+			  		</ul>
+					<!--<<p><strong><span id="chatbox"></span></strong></p>-->
+			  	</div>
+			</div>
+			<form id="mycontactform" action="" method="post">
+				<label for="message">Enter Text:</label>
+				<textarea id="message" name="message"></textarea>
+				<!--<input id="submit" type="button" value="send" />-->
+				<button id="submit" type="button" class="btn btn-default" onclick="submitMessage()">Send Message</button>
+			</form>
+		</div>
+	  </div>
+	</div>
+</div>
+
+
+
+
+<body onLoad="setInterval(fetchChatLog, 2000)">
+{% endblock %}

@@ -1,0 +1,8 @@
+1. virtualenv ./
+2.  sudo pip install requirements
+3. source bin/activate
+4. cd app
+5. ./db_create.py
+6. python run.py runserver --debug
+
+go to 

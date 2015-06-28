@@ -1,0 +1,7 @@
+*.db
+*.pyc
+/bin/*
+/include/*
+/lib/*
+/local/*
+/app/secretKeys.py

@@ -1,0 +1,25 @@
+{%extends "base.html"%}
+
+{% block page_content %}
+	<h1> Users </h1>
+	{% for user in users %}
+		<h4>{{user.name}}</h4>
+		{% for trip in user.rides %}
+			<li>{{trip.destination}}</li>
+		{% endfor %}
+	{% endfor %}
+<div container>
+	<div class="panel-group">
+		{% for ride in rides %}
+			<div class="panel panel-default">
+			  	<div class="panel-heading">
+			  		<b>{{ride.getHost().name}} is hosting a ride to {{ride.destination}}!</b>
+			  		<a href="/apply/{{ride.id}}" class="btn btn-default">Join ride</a>
+			  	</div>
+	    		<div class="panel-body">Panel Content</div>
+			</div>
+	  		
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}
