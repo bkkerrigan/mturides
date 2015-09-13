@@ -1,27 +1,55 @@
 {%extends "base.html"%}
 
 {% block page_content %}
-<div class="container">
-	<h1>Rides Joined</h1>
+<div class="panel panel-default">
+	<div class="panel-heading"><strong>Rides Joined</strong></div>
+	{% for a in user.getApplications() %}
+		{% if a.approved %}
+			<a href="/application/{{a.id}}" class="btn btn-default">{{a.getRide().destination}}</a>
+		{% else %}
+		
+		{% endif %}
+	{% endfor %}
+
 </div>
 
-<div class="container">
-	<h1>Hosted Rides</h1>
+<div class="panel panel-default">
+	<div class="panel-heading"><strong>Hosted Rides</strong></div>
 	{% for r in user.getHostedRides() %}
+	<div class="panel panel-default">
 		<h4> {{r.destination}}</h4>
-        <div class="container">
+			<div class="panel panel-default">
+			<h4>Open Applications</h4>
         	{% for a in r.getApplications() %}
-			  		<a href="/application/{{a.id}}" class="btn btn-default">{{a.getApplicant().name}}</a>
+				    {% if a.approved %}
+				    {% else %}
+				   	<a href="/application/{{a.id}}" class="btn btn-default">{{a.getApplicant().name}}</a>
+				    {% endif %}
         	{% endfor %}
-		</div>
+        	</div>
+
+        	<div class="panel panel-default">
+			<h4>Confirmed Passengers</h4>
+        	{% for p in r.getPassengers() %}
+			  		<a href="/application/{{r.getApplicationIDFor(p.id)}}" class="btn btn-default">{{p.name}}</a>
+        	{% endfor %}
+        	</div>
+	</div>
     {% endfor %}
 </div>
 
-<div class="container">
-	<h1>Pending Joins</h1>
+<div class="panel panel-default">
+	<div class="panel-heading"><strong>Pending Joins</strong></div>
+	{%for a in user.getApplications()%}
+		{% if a.approved %}
+		{% else %}
+			<a href="/application/{{a.id}}" class="btn btn-default">{{a.getRide().destination}}</a>
+		{% endif %}
+
+	{%endfor%}
 </div>
 
-<div class="container">
-	<h1>Requested Rides</h1>
+<div class="panel panel-default">
+	<div class="panel-heading"><strong>Requested Rides</strong></div>
 </div>
 {% endblock %}

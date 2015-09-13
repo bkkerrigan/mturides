@@ -5,4 +5,12 @@
 5. ./db_create.py
 6. python run.py runserver --debug
 
-go to 
+This is my personal project MTU Rides. The purpose of the website is to give students at Michigan Tech an easy way to find rides from other students to essential destinations around town. 
+
+Currently, users can login to the website with their Gmail accounts. Later I will limit the site to only allow @mtu.edu students. After logging in students can host and join 'rides'.
+
+To join a ride, users will request/apply to a hosts ride via the 'Application screen'. The 'Applicaton screen' is a live chat between the applicant and the host of the ride. The purpose of the chat is to allow users to make arrangements without having to give away private data such as their phone or email. If you are the host viewing the application screen, you have the option to accept or deny a persons request to join your ride.
+
+The live chat uses Javascript to continuously poll the SQL server for new messages.
+
+Hosted rides appear on the front page of the website.

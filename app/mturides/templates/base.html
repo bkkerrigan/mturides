@@ -1,10 +1,67 @@
 {% extends "bootstrap/base.html" %}
 
 
-<script type=text/javascript src="{{
-  url_for('static', filename='jquery-2.1.4.js') }}"></script>
+{% block scripts %}
+<!--Add a button for the user to click to initiate auth sequence -->
+    <script type="text/javascript">
 
-  
+      var clientId = '386659023268-c3u35m5mhnn4piaksm6dgudvcljp674h.apps.googleusercontent.com';
+
+      var apiKey = 'AIzaSyA--EJc9vyu7yRWjQd7mfIb0a9l70wze3c';
+
+      var scopes = 'https://www.googleapis.com/auth/userinfo.profile';
+
+      function handleClientLoad() {
+        // Step 2: Reference the API key
+        gapi.client.setApiKey(apiKey);
+        //makeApiCall()
+        window.setTimeout(checkAuth,1);
+      }
+
+      function checkAuth() {
+        gapi.auth.authorize({client_id: clientId, scope: scopes, immediate: true}, handleAuthResult);
+      }
+
+      function handleAuthResult(authResult) {
+        var authorizeButton = document.getElementById('authorize-button');
+        if (authResult && !authResult.error) {
+          makeApiCall();
+        } else {
+            $.post('/logout', null)//.done(
+        }
+      }
+
+      function handleAuthClick(event) {
+        // Step 3: get authorization to use private data
+        gapi.auth.authorize({client_id: clientId, scope: scopes, immediate: false}, handleAuthResult);
+        return false;
+      }
+      // Load the API and make an API call.  Display the results on the screen.
+      function makeApiCall() {
+        // Step 4: Load the Google+ API
+        gapi.client.load('oauth2', 'v2').then(function() {
+          // Step 5: Assemble the API request
+          var request = gapi.client.oauth2.userinfo.get();
+          // Step 6: Execute the API request
+          request.then(function(resp) {
+             //   console.log(resp.result)
+                
+          }, function(reason) {
+            console.log('Error: ' + reason.result.error.message);
+          });
+        });
+      }
+
+      function run(){
+        setInterval(handleClientLoad, 2000)
+      }
+    </script>
+    // Step 1: Load JavaScript client library
+    <script src="https://apis.google.com/js/client.js?onload=run"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
+{% endblock %}
+
+
 {% block title %}MTU Rides{% endblock %}
 
 
@@ -26,6 +83,8 @@
             </ul>
             <ul class="nav navbar-nav">
                 <li><a href="/hostRide">Host a ride</a></li>
+                <li><a href="/manageRides">Manage Current Rides</a></li>
+                <li><a href="/logout">Logout</a></li>
             </ul>
         </div>
     </div>
@@ -33,18 +92,16 @@
 {% endblock %}
 
 <div class="container">
-{% block content %}
 
+{% block content %}
+<div class="g-signin2" data-onsuccess="onSignIn"></div>
     {% if user %}
         <h1>Hello {{user.name}}</h1>
     {% endif %}
-
-    {% for r in user.getHostedRides()%}
-        <li>{{r.destination}}</li>
-    {% endfor %}
 
 	{% block page_content %}
 	{% endblock %}
 
 {% endblock %}
 </div>
+

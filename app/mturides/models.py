@@ -34,6 +34,9 @@ class User(db.Model):
 	def getHostedRides(self):
 		return Ride.query.filter(Ride.host_id==self.id)
 
+	def getJoinedRides(self):
+		p = Ride.query.join(usertrips,(usertrips.c.uid == User.id)).filter(Ride.host_id != self.id).all()
+		return p
 	def is_authenticated(self):
 		return True
 
@@ -44,6 +47,9 @@ class User(db.Model):
 
 	def get_id(self):
 		return unicode(self.id)
+
+	def getApplications(self):
+		return Application.query.filter(Application.applicant_id == self.id).all()
 
 	def __repr__(self):
 		return '<User %r' % (self.name)
@@ -65,15 +71,20 @@ class Ride(db.Model):
 		return p
 
 	def getApplications(self):
-		a=Application.query.filter(Application.host_id == self.id).all()
-		print a
-		return a
+		return Application.query.filter(Application.ride_id == self.id).all()
 
+	def getApplicationIDFor(self, userID):
+		return Application.query.filter(Application.ride_id==self.id).filter(Application.applicant_id==userID)
+	
 	def addApplication(self, application):
 		self.applications.append(application)
 		db.session.add(application)
 		db.session.commit()
 		return
+	def addPassenger(self, user):
+		user.joinRide(self)
+		return
+
 
 class Application(db.Model):
 	__tablename__='application'
@@ -84,6 +95,8 @@ class Application(db.Model):
 	host_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 	applicant_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 	messages = db.relationship('Message', backref="application")
+	approved = db.Column(db.Boolean)
+
 	def __repr__(self):
 		return '<Application for ride %r' % (self.id)
 
@@ -96,6 +109,20 @@ class Application(db.Model):
 	def getPassengers(self):
 		p = User.query.join(usertrips,(usertrips.c.uid == User.id)).filter(usertrips.c.rid==self.id)
 		return p
+	
+	def setApproval(self, value):
+		user = User.query.filter(User.id == self.applicant_id).first()
+		ride = Ride.query.filter(Ride.id == self.ride_id).first()
+		if value == True:
+			self.approved = True
+			ride.addPassenger(user)
+			for i in ride.getPassengers():
+				print i.name
+		else:
+			del(self)
+
+		db.session.commit()
+
 
 	def addMessage(self, newMessage):
 		self.messages.append(newMessage)

@@ -1,8 +1,9 @@
 <script>
 function submitMessage(){
-	 $.post('/postMessage/{{application.id}}', $('#mycontactform').serialize())//.done(
+	 $.post('/postMessage/{{application.id}}', $('#messageBox').serialize())//.done(
  }
-function fetchChatLog(){
+
+ function fetchChatLog(){
 	$.post('/refreshApplicaton/{{application.id}}').done(function(updateChat){
 		var messages = updateChat['result'];
 		var chatbox = document.getElementById("chatbox");
@@ -18,40 +19,58 @@ function fetchChatLog(){
 		}
 	});
 }
+ </script>
+
+
+{% if  user.id == application.host_id%}
+<script>
+	function acceptPassenger(accepted){
+		//var data ={};
+		//data['accept'] = accepted
+		$.post('/acceptApplication/{{application.id}}', {accept: accepted})//.done(
+
+	}
 </script>
+{% endif %}
 
 {%extends "base.html"%}
 {% block page_content %}
 	<h1>Application for {{application.ride.destination}}.</h1>
 	<li>Host: {{host.name}}</li>
 	<li>Applicant: {{applicant.name}}</li>
-	
 
 
 <div class="container-fluid">
 	<div class="panel panel-default">
+	{% if  user.id == application.host_id%}
+	<div class="btn-group">
+	    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Actions <span class="caret"></span></button>
+	    <ul class="dropdown-menu" role="menu">
+	      <li><button type="button" class="btn btn-primary" onclick="acceptPassenger(1)">Accept Passenger</button></li>
+	      <li><button type="button" class="btn btn-primary" onclick="acceptPassenger(0)">Reject Passenger</button></li>
+	    </ul>
+  	</div>
+		{% if application.approved==True %}
+			
+		{% else %}
+
+		{% endif %}
+	{% endif %}
 	  <div class="panel-body">
 		<div class="form-group">
 			<div class="panel panel-default">
 			  	<div class="panel-body">
-			  		<ul style="list-style-type:none" span id="chatbox">
-			  		</ul>
-					<!--<<p><strong><span id="chatbox"></span></strong></p>-->
+			  		<ul style="list-style-type:none" span id="chatbox"></ul>
 			  	</div>
 			</div>
-			<form id="mycontactform" action="" method="post">
-				<label for="message">Enter Text:</label>
-				<textarea id="message" name="message"></textarea>
-				<!--<input id="submit" type="button" value="send" />-->
-				<button id="submit" type="button" class="btn btn-default" onclick="submitMessage()">Send Message</button>
-			</form>
+			<label for="message">Enter Text:</label>
+			<textarea id="messageBox" name="message"></textarea>
+			<button id="submit" type="button" class="btn btn-default" onclick="submitMessage()">Send Message</button>
 		</div>
 	  </div>
 	</div>
 </div>
 
 
-
-
-<body onLoad="setInterval(fetchChatLog, 2000)">
+<body onLoad="setInterval(fetchChatLog, 1000)">
 {% endblock %}
